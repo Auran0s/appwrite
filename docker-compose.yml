@@ -11,37 +11,6 @@ x-logging: &x-logging
       max-size: "10m"
 
 services:
-  traefik:
-    image: traefik:2.11
-    <<: *x-logging
-    container_name: appwrite-traefik
-    command:
-      - --log.level=DEBUG
-      - --api.insecure=true
-      - --providers.file.directory=/storage/config
-      - --providers.file.watch=true
-      - --providers.docker=true
-      - --providers.docker.exposedByDefault=false
-      - --providers.docker.constraints=Label(`traefik.constraint-label-stack`,`appwrite`)
-      - --entrypoints.appwrite_web.address=:80
-      - --entrypoints.appwrite_websecure.address=:443
-      - --accesslog=true
-    ports:
-      - 80:80
-      - 8080:80
-      - 443:443
-      - 9500:8080
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - appwrite-config:/storage/config:ro
-      - appwrite-certificates:/storage/certificates:ro
-    depends_on:
-      - appwrite
-    networks:
-      - gateway
-      - appwrite
-      - runtimes
-
   appwrite:
     container_name: appwrite
     <<: *x-logging
@@ -53,7 +22,7 @@ services:
         TESTING: true
         VERSION: dev
     ports:
-      - 9501:80
+      - 9501:9501
     networks:
       - appwrite
     labels:
@@ -222,7 +191,7 @@ services:
     image: appwrite-dev
     restart: unless-stopped
     ports:
-      - 9505:80
+      - 9505:9505
     labels:
       - "traefik.enable=true"
       - "traefik.constraint-label-stack=appwrite"
@@ -1010,7 +979,7 @@ services:
     <<: *x-logging
     restart: always
     ports:
-      - 9506:8080
+      - 9506:9506
     networks:
       - appwrite
 
